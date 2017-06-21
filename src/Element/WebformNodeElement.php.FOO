@@ -1,0 +1,21 @@
+<?php
+
+namespace Drupal\webform_node_element\Element;
+
+use Drupal\Core\Render\Element\RenderElement;
+
+/**
+ * Provides a render element for webform markup.
+ *
+ * @FormElement("webform_node_element")
+ */
+class WebformNodeElement extends RenderElement {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getInfo() {
+    return [];
+  }
+
+}
