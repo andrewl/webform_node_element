@@ -31,24 +31,11 @@ class WebformNodeElement extends WebformMarkupBase {
 
   /**
    * {@inheritdoc}
-  public function buildText(array &$element, $value, array $options = []) {
-    $element['#markup'] = MailFormatHelper::htmlToText("<h2>Hello, World!!!!!</h2>");
-    return parent::buildText($element, $value, $options);
-  }
-   */
-
-  /**
-   * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
-    $form['markup']['markup'] = [
-      '#type' => 'webform_html_editor',
-      '#title' => $this->t('HTML markup'),
-      '#description' => $this->t('Enter custom HTML into your webform.'),
-    ];
     $form['node_element'] = [
-      '#title' => $this->t('Node Information'),
+      '#title' => $this->t('Node Details'),
       '#type' => 'fieldset',
     ];
     $form['node_element']['nid'] = [
