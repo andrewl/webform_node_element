@@ -12,7 +12,7 @@ use Drupal\webform\Plugin\WebformElement\WebformMarkupBase;
  * @WebformElement(
  *   id = "webform_node_element",
  *   label = @Translation("Node"),
- *   description = @Translation("Provides an element to render a node"),
+ *   description = @Translation("Provides an element that renders a node"),
  *   category = @Translation("Markup elements"),
  *   states_wrapper = TRUE,
  * )
@@ -24,22 +24,18 @@ class WebformNodeElement extends WebformMarkupBase {
    */
   public function getDefaultProperties() {
     return parent::getDefaultProperties() + [
-      // Markup settings.
       'markup' => '',
-      'nid' => '12345',
+      'nid' => NULL,
     ];
   }
 
   /**
    * {@inheritdoc}
-   */
   public function buildText(array &$element, $value, array $options = []) {
-    /**
-    * $element['#markup'] = MailFormatHelper::htmlToText($element['#markup']);
-    */
     $element['#markup'] = MailFormatHelper::htmlToText("<h2>Hello, World!!!!!</h2>");
     return parent::buildText($element, $value, $options);
   }
+   */
 
   /**
    * {@inheritdoc}
@@ -58,7 +54,7 @@ class WebformNodeElement extends WebformMarkupBase {
     $form['node_element']['nid'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Node ID'),
-      '#description' => $this->t('The ID of the node to render'),
+      '#description' => $this->t('The ID of the node to render. Leave empty to listen to an event (tbd). Use a custom display mode called "webform_element".'),
     ];
     return $form;
   }
