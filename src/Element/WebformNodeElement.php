@@ -3,6 +3,7 @@
 namespace Drupal\webform_node_element\Element;
 
 use Drupal\Core\Render\Element\RenderElement;
+use Drupal\webform_node_element\Event\DynamicNIDEvent;
 
 /**
  * Provides a render element to display a node.
@@ -34,13 +35,18 @@ class WebformNodeElement extends RenderElement {
   public static function preRenderWebformNodeElement(array $element) {
     $element['#markup'] = "";
 
-    // @todo - if nid is not set use an event to get it?
-    if (!empty($element['#nid'])) {
-      $nodeid = $element['#nid'];
+    $nid = $element['#nid'];
+
+    // If a nid has node been set then allow event subscribers to set the nid.
+    if (empty($nid)) {
+      $dispatcher = \Drupal::service('event_dispatcher');
+      $event = new DynamicNidEvent();
+      $dispatcher->dispatch(DynamicNidEvent::PRERENDER, $event);
+      $nid = $event->getNid();
     }
 
-    if ($nodeid) {
-      $node = \Drupal::entityManager()->getStorage('node')->load($nodeid);
+    if ($nid) {
+      $node = \Drupal::entityManager()->getStorage('node')->load($nid);
       $view_builder = \Drupal::entityManager()->getViewBuilder('node');
 
       if ($node && $view_builder) {

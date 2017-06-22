@@ -3,7 +3,6 @@
 namespace Drupal\webform_node_element\Plugin\WebformElement;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Mail\MailFormatHelper;
 use Drupal\webform\Plugin\WebformElement\WebformMarkupBase;
 
 /**
