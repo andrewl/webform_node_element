@@ -3,7 +3,7 @@
 namespace Drupal\webform_node_element\Element;
 
 use Drupal\Core\Render\Element\RenderElement;
-use Drupal\webform_node_element\Event\DynamicNIDEvent;
+use Drupal\webform_node_element\Event\WebformNodeElementPreRender;
 
 /**
  * Provides a render element to display a node.
@@ -36,24 +36,33 @@ class WebformNodeElement extends RenderElement {
     $element['#markup'] = "";
 
     $nid = $element['#nid'];
+    $element_id = $element['#webform_id'];
 
-    // If a nid has node been set then allow event subscribers to set the nid.
-    if (empty($nid)) {
-      $dispatcher = \Drupal::service('event_dispatcher');
-      $event = new DynamicNidEvent();
-      $dispatcher->dispatch(DynamicNidEvent::PRERENDER, $event);
-      $nid = $event->getNid();
-    }
+    // Allow event subscribers to set the nid and display mode.
+    $dispatcher = \Drupal::service('event_dispatcher');
+    $event = new WebformNodeElementPreRender($element_id, $nid, 'webform_element');
+    $dispatcher->dispatch(WebformNodeElementPreRender::PRERENDER, $event);
 
-    if ($nid) {
+    $nid = $event->getNid();
+    $display_mode = $event->getDisplayMode();
+
+    if ($nid && $display_mode) {
       $node = \Drupal::entityManager()->getStorage('node')->load($nid);
       $view_builder = \Drupal::entityManager()->getViewBuilder('node');
 
       if ($node && $view_builder) {
-        if ($render_array = $view_builder->view($node, 'webform_element')) {
+        if ($render_array = $view_builder->view($node, $display_mode)) {
           $element['#markup'] = \Drupal::service('renderer')->renderRoot($render_array);
         }
       }
+    }
+    else {
+      \Drupal::logger('webform_node_element')->notice('webform_node_element @element_id not rendered because nid was set to "@nid" and display_mode was set to "@display_mode"',
+        [
+          '@element_id' => $element_id,
+          '@nid' => $nid,
+          '@display_mode' => $display_mode,
+        ]);
     }
 
     return $element;
